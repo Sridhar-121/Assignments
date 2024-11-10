@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#This is why you don't have a commit chart.
+# This is why you don't have a commit chart.
 #      .--.
 #     |o_o |   
 #     |:_/ |   Made by Phase (https://github.com/phase)
@@ -9,47 +9,57 @@
 #  /'\_   _/'\ 
 #  \___)=(___/ 
 
-read -p "What is your GitHub username?" username
-read -p "What repo do you want to contribute to?" repo
+# Hardcoded GitHub username and repo
+username="Sridhar-121"
+repo="assignments"
 
-url="https://github.com/$username/$repo"
+url="https://github.com/$username/$repo.git"
 
-#Create repos for pushing
+# Create repos for pushing
 git clone $url orig
 git clone $url streak
 
 cd streak
 
-#Create fake date
-read -d "What day do you want to start from?" date
-read -d "How long do you want the streak to be?" streak
-d=$(date -d "$d")
+# Hardcoded start date and streak length
+start_date="2024-05-01"
+streak_length=10  # Modify this value if you want a different streak length
+
+# Convert the start date to a proper format
+d=$(date -d "$start_date")
 i=1
 
-while [ $i -le $streak ]; do
-  export GIT_AUTHOR_DATE="$d +0000" #Set commit date as fake date
+# Loop through the streak
+while [ $i -le $streak_length ]; do
+  export GIT_AUTHOR_DATE="$d +0000" # Set commit date as fake date
   export GIT_COMMIT_DATE="$d +0000"
   
-  #Get random commit message
+  # Get random commit message
   message=$(curl -sSL http://whatthecommit.com/index.txt)
   
+  # Commit the empty changes with a random message
   git commit --allow-empty -m "$message"
   
+  # Print commit details (author date and message)
   e="$GIT_AUTHOR_DATE : $message"
   echo $e
   
-  #Increment fake date
+  # Increment the date by 1 day
   d=$(date -d "$d 1 day")
-  i=$(( $i+1 ))
+  i=$((i + 1))
 done
 
-git gc #Clean repo
+# Clean the repo (remove unnecessary files)
+git gc
 
-git push $url master #Push fake commits
+# Push fake commits to the GitHub repository
+git push $url main
+
+# Push changes to the original repo (force push to overwrite history)
 cd ../orig/
-git push $url master -f #Remove previous commits
+git push $url main -f
 
-#Remove local repos
+# Clean up by removing local repositories
 cd ../
 rm -rf orig
 rm -rf streak
